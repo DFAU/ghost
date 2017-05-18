@@ -1,0 +1,40 @@
+<?php
+defined('TYPO3_MODE') or die();
+
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsConfigurationFactory::DEFAULT_CONNECTION_NAME] = [
+    'queueFactory' => [
+      'className' => \Bernard\QueueFactory\PersistentFactory::class,
+      'arguments' => [
+          'driver' => function() { return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\DFAU\Ghost\Driver\Typo3DbDriver::class); },
+          'serializer' => function() { return new \Bernard\Serializer\SimpleSerializer(); }
+      ]
+    ],
+    'receivers' => [],
+    'middleware' => [
+        \DFAU\Ghost\CmsConfigurationFactory::MIDDLEWARE_DIRECTION_PRODUCER => [],
+        \DFAU\Ghost\CmsConfigurationFactory::MIDDLEWARE_DIRECTION_CONSUMER => [
+            \Bernard\Middleware\ErrorLogFactory::class => [],
+            \Bernard\Middleware\FailuresFactory::class => [
+                'depends' => \Bernard\Middleware\ErrorLogFactory::class,
+                'arguments' => [
+                    'queues' => function(\Bernard\QueueFactory $queues) {
+                        return $queues;
+                    }
+                ],
+            ],
+        ],
+    ]
+];
+
+if (class_exists('redis')) {
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsConfigurationFactory::DEFAULT_CONNECTION_NAME];
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis']['queueFactory']['arguments'] = function (
+    ) {
+        $redis = new \Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $redis->setOption(Redis::OPT_PREFIX, 'ghost:');
+        return new \Bernard\Driver\PhpRedisDriver($redis);
+    };
+}
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][\DFAU\Ghost\Command\QueueCommandController::class] = \DFAU\Ghost\Command\QueueCommandController::class;
