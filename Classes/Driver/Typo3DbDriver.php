@@ -88,7 +88,7 @@ class Typo3DbDriver implements \Bernard\Driver
             }
 
             //sleep for 10 ms
-            usleep(10000);
+            usleep(100000);
         }
     }
 
