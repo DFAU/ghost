@@ -6,19 +6,27 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
       'className' => \Bernard\QueueFactory\PersistentFactory::class,
       'arguments' => [
           'driver' => function() { return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\DFAU\Ghost\Driver\Typo3DbDriver::class); },
-          'serializer' => function() { return new \Bernard\Serializer\SimpleSerializer(); }
+          'serializer' => function() { return new \Bernard\Serializer(); }
       ]
     ],
     'receivers' => [],
-    'middleware' => [
+    'subscribers' => [
         \DFAU\Ghost\CmsConfigurationFactory::MIDDLEWARE_DIRECTION_PRODUCER => [],
         \DFAU\Ghost\CmsConfigurationFactory::MIDDLEWARE_DIRECTION_CONSUMER => [
-            \Bernard\Middleware\ErrorLogFactory::class => [],
-            \Bernard\Middleware\FailuresFactory::class => [
-                'depends' => \Bernard\Middleware\ErrorLogFactory::class,
+            \Bernard\EventListener\ErrorLogSubscriber::class => [],
+            \Bernard\EventListener\FailureSubscriber::class => [
+                'depends' => \Bernard\EventListener\ErrorLogSubscriber::class,
                 'arguments' => [
-                    'queues' => function(\Bernard\QueueFactory $queues) {
-                        return $queues;
+                    'producer' => function($connectionName, \Bernard\QueueFactory $queues) {
+                        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                            \Bernard\Producer::class,
+                            $queues,
+                            \DFAU\Ghost\CmsConfigurationFactory::getEventDispatcherForDirectionAndConnectionName(
+                                $queues,
+                                \DFAU\Ghost\CmsConfigurationFactory::MIDDLEWARE_DIRECTION_PRODUCER,
+                                $connectionName
+                            )
+                        );
                     }
                 ],
             ],
