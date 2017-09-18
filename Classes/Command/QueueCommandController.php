@@ -27,7 +27,7 @@ class QueueCommandController extends CommandController
             $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db); //force disconnect before worker fork
         }
 
-        $queueWorker = function ($i) use ($queueNames, $connectionName) {
+        $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
             $GLOBALS['worker-id'] = $i;
             $queueFactory = CmsConfigurationFactory::getQueueFactoryForConnectionName($connectionName);
 
