@@ -9,7 +9,7 @@
   },
   "autoload": {
     "psr-4": {
-      "DFAU\\Ghost\\": "typo3conf/ext/ghost/Classes/"
+      "DFAU\\Ghost\\": "Classes/"
     }
   }
 }
