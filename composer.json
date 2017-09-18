@@ -1,0 +1,15 @@
+{
+  "name": "dfau/ghost",
+  "description": "TYPO3 Background Jobqueue",
+  "license": "GPL-2.0+",
+  "require": {
+    "typo3/cms": "^7.6",
+    "bernard/bernard": "dev-master",
+    "qxsch/worker-pool": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "DFAU\\Ghost\\": "typo3conf/ext/ghost/Classes/"
+    }
+  }
+}
