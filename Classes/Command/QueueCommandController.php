@@ -50,7 +50,11 @@ class QueueCommandController extends CommandController
             }
         };
 
-        if ($workerPoolSize > 1) {
+        if ($workerPoolSize > 1 && !class_exists(\QXS\WorkerPool\WorkerPool::class)) {
+            $this->output->outputLine('Warning: Worker Pool Size is bigger than 1 and qxsch/worker-pool is not installed. Falling back to single worker.');
+        }
+
+        if ($workerPoolSize > 1 && class_exists(\QXS\WorkerPool\WorkerPool::class)) {
             $wp = new \QXS\WorkerPool\WorkerPool();
             $wp->setWorkerPoolSize($workerPoolSize)->create(new \QXS\WorkerPool\ClosureWorker($queueWorker));
 

@@ -10,11 +10,11 @@
   "require": {
     "php" : "^7.0",
     "typo3/cms": "^7.6 || ^8.7",
-    "bernard/bernard": "^1.0.0@alpha",
-    "qxsch/worker-pool": "^1.5"
+    "bernard/bernard": "^1.0.0@alpha"
   },
   "suggest": {
-    "ext-redis": "In order to use the redis driver"
+    "ext-redis": "Necessary for the redis driver",
+    "qxsch/worker-pool": "For queue worker parallelization"
   },
   "autoload": {
     "psr-4": {
