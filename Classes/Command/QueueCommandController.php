@@ -6,6 +6,7 @@ namespace DFAU\Ghost\Command;
 use Bernard\Consumer;
 use Bernard\Queue\RoundRobinQueue;
 use DFAU\Ghost\CmsConfigurationFactory;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
@@ -22,7 +23,11 @@ class QueueCommandController extends CommandController
     {
         $queueNames = GeneralUtility::trimExplode(',', $queueNames, true);
 
-        $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
+        if (!class_exists(ConnectionPool::class)) {
+            $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db); //force disconnect before worker fork
+        }
+
+        $queueWorker = function ($i) use ($queueNames, $connectionName) {
             $GLOBALS['worker-id'] = $i;
             $queueFactory = CmsConfigurationFactory::getQueueFactoryForConnectionName($connectionName);
 
