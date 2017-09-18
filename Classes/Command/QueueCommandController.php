@@ -15,15 +15,14 @@ class QueueCommandController extends CommandController
     /**
      * @param string $queueNames Seperated by comma
      * @param int $workerPoolSize
+     * @param int $maxRuntime
      * @param string $connectionName
      */
-    public function consumeCommand(string $queueNames, $workerPoolSize = 1, $connectionName = CmsConfigurationFactory::DEFAULT_CONNECTION_NAME)
+    public function consumeCommand(string $queueNames, $workerPoolSize = 1, $maxRuntime = PHP_INT_MAX, $connectionName = CmsConfigurationFactory::DEFAULT_CONNECTION_NAME)
     {
         $queueNames = GeneralUtility::trimExplode(',', $queueNames, true);
 
-        $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db); //force disconnect before worker fork
-
-        $queueWorker = function ($i) use ($queueNames, $connectionName) {
+        $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
             $GLOBALS['worker-id'] = $i;
             $queueFactory = CmsConfigurationFactory::getQueueFactoryForConnectionName($connectionName);
 
@@ -42,7 +41,7 @@ class QueueCommandController extends CommandController
             }
 
             if ($queue) {
-                $consumer->consume($queue);
+                $consumer->consume($queue, [ 'max-runtime' => $maxRuntime ]);
             }
         };
 

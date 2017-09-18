@@ -3,11 +3,17 @@ defined('TYPO3_MODE') or die();
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsConfigurationFactory::DEFAULT_CONNECTION_NAME] = [
     'queueFactory' => [
-      'className' => \Bernard\QueueFactory\PersistentFactory::class,
-      'arguments' => [
-          'driver' => function() { return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\DFAU\Ghost\Driver\Typo3DbDriver::class); },
-          'serializer' => function() { return new \Bernard\Serializer(); }
-      ]
+        'className' => \Bernard\QueueFactory\PersistentFactory::class,
+        'arguments' => [
+            'driver' => function () {
+                /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
+                $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+                return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bernard\Driver\DoctrineDriver::class, $connectionPool->getConnectionForTable('bernard_messages'));
+            },
+            'serializer' => function () {
+                return new \Bernard\Serializer();
+            }
+        ]
     ],
     'receivers' => [],
     'subscribers' => [
@@ -17,7 +23,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
             \Bernard\EventListener\FailureSubscriber::class => [
                 'depends' => \Bernard\EventListener\ErrorLogSubscriber::class,
                 'arguments' => [
-                    'producer' => function($connectionName, \Bernard\QueueFactory $queues) {
+                    'producer' => function ($connectionName, \Bernard\QueueFactory $queues) {
                         return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
                             \Bernard\Producer::class,
                             $queues,
@@ -36,8 +42,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
 
 if (class_exists('redis')) {
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsConfigurationFactory::DEFAULT_CONNECTION_NAME];
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis']['queueFactory']['arguments']['driver'] = function (
-    ) {
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis']['queueFactory']['arguments']['driver'] = function () {
         $redis = new \Redis();
         $redis->connect('127.0.0.1', 6379);
         $redis->setOption(Redis::OPT_PREFIX, 'ghost:');
