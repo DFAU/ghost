@@ -3,7 +3,7 @@
   "description": "TYPO3 Background Jobqueue",
   "license": "GPL-2.0+",
   "require": {
-    "typo3/cms": "^7.6",
+    "typo3/cms": "^7.6 || ^8.7",
     "bernard/bernard": "dev-master",
     "qxsch/worker-pool": "^1.5"
   },
