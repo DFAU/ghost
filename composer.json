@@ -2,15 +2,19 @@
   "name": "dfau/ghost",
   "type": "typo3-cms-extension",
   "description": "TYPO3 Background Jobqueue",
-  "license": "GPL-2.0+",
+  "license": "GPL-3.0+",
   "replace": {
     "ghost": "self.version",
     "typo3-ter/ghost": "self.version"
   },
   "require": {
+    "php" : "^7.0",
     "typo3/cms": "^7.6 || ^8.7",
     "bernard/bernard": "^1.0.0@alpha",
     "qxsch/worker-pool": "^1.5"
+  },
+  "suggest": {
+    "ext-redis": "In order to use the redis driver"
   },
   "autoload": {
     "psr-4": {
