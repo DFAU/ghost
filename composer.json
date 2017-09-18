@@ -4,7 +4,7 @@
   "license": "GPL-2.0+",
   "require": {
     "typo3/cms": "^7.6 || ^8.7",
-    "bernard/bernard": "dev-master",
+    "bernard/bernard": "^1.0.0@alpha",
     "qxsch/worker-pool": "^1.5"
   },
   "autoload": {
