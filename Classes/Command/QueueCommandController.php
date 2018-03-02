@@ -23,8 +23,12 @@ class QueueCommandController extends CommandController
     {
         $queueNames = GeneralUtility::trimExplode(',', $queueNames, true);
 
-        if (!class_exists(ConnectionPool::class)) {
-            $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db); //force disconnect before worker fork
+        //force disconnect before worker fork
+        if (class_exists(ConnectionPool::class)) {
+            $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+            $connectionPool->getConnectionForTable('bernard_messages')->close();
+        } else {
+            $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db);
         }
 
         $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
@@ -47,6 +51,8 @@ class QueueCommandController extends CommandController
 
             if ($queue) {
                 $consumer->consume($queue, [ 'max-runtime' => $maxRuntime ]);
+            } else {
+                $this->output->outputLine('Error: could not create queue for worker:' . $i);
             }
         };
 
@@ -56,7 +62,9 @@ class QueueCommandController extends CommandController
 
         if ($workerPoolSize > 1 && class_exists(\QXS\WorkerPool\WorkerPool::class)) {
             $wp = new \QXS\WorkerPool\WorkerPool();
-            $wp->setWorkerPoolSize($workerPoolSize)->create(new \QXS\WorkerPool\ClosureWorker($queueWorker));
+            $wp->setWorkerPoolSize($workerPoolSize)
+                ->disableSemaphore()
+                ->create(new \QXS\WorkerPool\ClosureWorker($queueWorker));
 
             for ($i = 0; $i < $workerPoolSize; $i++) {
                 $wp->run($i);
