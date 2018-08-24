@@ -23,12 +23,14 @@ class QueueCommandController extends CommandController
     {
         $queueNames = GeneralUtility::trimExplode(',', $queueNames, true);
 
-        //force disconnect before worker fork
-        if (class_exists(ConnectionPool::class)) {
-            $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
-            $connectionPool->getConnectionForTable('bernard_messages')->close();
-        } else {
-            $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db);
+        if ($workerPoolSize > 1) {
+            //force disconnect before worker fork
+            if (class_exists(ConnectionPool::class)) {
+                $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+                $connectionPool->getConnectionForTable('bernard_messages')->close();
+            } else {
+                $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db);
+            }
         }
 
         $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
