@@ -54,4 +54,7 @@ if (class_exists('redis')) {
     };
 }
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][\DFAU\Ghost\Command\QueueCommandController::class] = \DFAU\Ghost\Command\QueueCommandController::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][\DFAU\Ghost\Command\ConsumeCommand::class] = \DFAU\Ghost\Command\ConsumeCommand::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\DFAU\Ghost\Command\ConsumeCommand::class] = [
+
+];\DFAU\Ghost\Command\ConsumeCommand::class;

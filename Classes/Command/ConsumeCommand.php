@@ -1,6 +1,5 @@
 <?php
 
-
 namespace DFAU\Ghost\Command;
 
 use Bernard\Consumer;
@@ -8,19 +7,63 @@ use Bernard\Queue\RoundRobinQueue;
 use DFAU\Ghost\CmsConfigurationFactory;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class QueueCommandController extends CommandController
+class ConsumeCommand extends Command
 {
 
     /**
-     * @param string $queueNames Seperated by comma
-     * @param int $workerPoolSize
-     * @param int $maxRuntime
-     * @param string $connectionName
+     * Configure the command by defining the name, options and arguments
      */
-    public function consumeCommand(string $queueNames, $workerPoolSize = 1, $maxRuntime = PHP_INT_MAX, $connectionName = CmsConfigurationFactory::DEFAULT_CONNECTION_NAME)
+    protected function configure()
     {
+        $this->setDescription('Consume list of Bernard Messages')
+        ->addOption(
+        'queueNames',
+        '',
+        InputOption::VALUE_REQUIRED,
+        'name of queue to progress'
+        )
+        ->addOption(
+            'maxRuntime',
+            '',
+            InputOption::VALUE_OPTIONAL,
+            'maximum Runtime for this task'
+        )
+        ->addOption(
+            'connectionName',
+            '',
+            InputOption::VALUE_OPTIONAL,
+            'Name of DB Connection'
+        )
+        ->addOption(
+            'workerPoolSize',
+            '',
+            InputOption::VALUE_OPTIONAL,
+            'Number of Workers in Workerpool'
+        );
+    }
+
+    /**
+     *
+     * @inheritdoc
+     *
+     */
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
+        $io = new SymfonyStyle($input, $output);
+        $options = $input->getOptions();
+        $workerPoolSize = ($options['workerPoolSize']) ? $options['workerPoolSize'] : 1;
+        $maxRuntime = ($options['maxRuntime']) ? $options['maxRuntime'] : PHP_INT_MAX;
+        $connectionName = ($options['connectionName']) ? $options['connectionName'] : CmsConfigurationFactory::DEFAULT_CONNECTION_NAME;
+        $queueNames = $options['queueNames'];
+
+        /*, $maxRuntime = PHP_INT_MAX, $connectionName = CmsConfigurationFactory::DEFAULT_CONNECTION_NAME);*/
         $queueNames = GeneralUtility::trimExplode(',', $queueNames, true);
 
         if ($workerPoolSize > 1) {
@@ -29,7 +72,8 @@ class QueueCommandController extends CommandController
                 $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
                 $connectionPool->getConnectionForTable('bernard_messages')->close();
             } else {
-                $GLOBALS['TYPO3_DB']->setDatabaseName(TYPO3_db);
+                $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+                $connectionPool->getConnectionForTable('bernard_messages')->close();
             }
         }
 
