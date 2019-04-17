@@ -8,9 +8,8 @@ use DFAU\Ghost\CmsConfigurationFactory;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,30 +21,29 @@ class ConsumeCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Consume list of Bernard Messages')
-        ->addOption(
+        $this->setDescription('Consume list of Bernard Messages');
+        $this->addArgument(
         'queueNames',
-        '',
-        InputOption::VALUE_REQUIRED,
+            InputArgument::REQUIRED,
         'name of queue to progress'
-        )
-        ->addOption(
+        );
+        $this->addArgument(
             'maxRuntime',
-            '',
-            InputOption::VALUE_OPTIONAL,
-            'maximum Runtime for this task'
-        )
-        ->addOption(
+            InputArgument::OPTIONAL,
+            'maximum Runtime for this task',
+            '600'
+        );
+        $this->addArgument(
             'connectionName',
-            '',
-            InputOption::VALUE_OPTIONAL,
-            'Name of DB Connection'
-        )
-        ->addOption(
+            InputArgument::OPTIONAL,
+            'Name of DB Connection',
+            '_default'
+        );
+        $this->addArgument(
             'workerPoolSize',
-            '',
-            InputOption::VALUE_OPTIONAL,
-            'Number of Workers in Workerpool'
+            InputArgument::OPTIONAL,
+            'Number of Workers in Workerpool',
+            '1'
         );
     }
 
@@ -58,10 +56,11 @@ class ConsumeCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $options = $input->getOptions();
-        $workerPoolSize = ($options['workerPoolSize']) ? $options['workerPoolSize'] : 1;
-        $maxRuntime = ($options['maxRuntime']) ? $options['maxRuntime'] : PHP_INT_MAX;
-        $connectionName = ($options['connectionName']) ? $options['connectionName'] : CmsConfigurationFactory::DEFAULT_CONNECTION_NAME;
-        $queueNames = $options['queueNames'];
+        $arguments = $input->getArguments();
+        $workerPoolSize = $arguments['workerPoolSize'];
+        $maxRuntime = $arguments['maxRuntime'];
+        $connectionName = $arguments['connectionName'];
+        $queueNames = $arguments['queueNames'];
 
         /*, $maxRuntime = PHP_INT_MAX, $connectionName = CmsConfigurationFactory::DEFAULT_CONNECTION_NAME);*/
         $queueNames = GeneralUtility::trimExplode(',', $queueNames, true);

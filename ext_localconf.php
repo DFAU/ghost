@@ -53,8 +53,3 @@ if (class_exists('redis')) {
         return new \Bernard\Driver\PhpRedisDriver($redis);
     };
 }
-
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][\DFAU\Ghost\Command\ConsumeCommand::class] = \DFAU\Ghost\Command\ConsumeCommand::class;
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\DFAU\Ghost\Command\ConsumeCommand::class] = [
-
-];\DFAU\Ghost\Command\ConsumeCommand::class;
