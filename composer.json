@@ -10,7 +10,7 @@
   "require": {
     "php" : "^7.0",
     "typo3/cms-core": "^7.6 || ^8.7 || ^9.5 || ^10.4",
-    "bernard/bernard": "^1.0.0@alpha"
+    "bernard/bernard": "^0.13"
   },
   "suggest": {
     "ext-redis": "Necessary for the redis driver",
