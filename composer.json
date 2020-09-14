@@ -4,7 +4,6 @@
   "description": "TYPO3 Background Jobqueue",
   "license": "GPL-3.0+",
   "replace": {
-    "ghost": "self.version",
     "typo3-ter/ghost": "self.version"
   },
   "require": {
