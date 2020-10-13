@@ -9,7 +9,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
                 if (class_exists(\TYPO3\CMS\Core\Database\ConnectionPool::class)) {
                     /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
                     $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
-                    return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bernard\Driver\DoctrineDriver::class, $connectionPool->getConnectionForTable('bernard_messages'));
+                    return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bernard\Driver\Doctrine\Driver::class, $connectionPool->getConnectionForTable('bernard_messages'));
                 } else {
                     return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\DFAU\Ghost\Driver\Typo3DbDriver::class);
                 }
@@ -50,6 +50,6 @@ if (class_exists('redis')) {
         $redis = new \Redis();
         $redis->connect('127.0.0.1', 6379);
         $redis->setOption(Redis::OPT_PREFIX, 'ghost:');
-        return new \Bernard\Driver\PhpRedisDriver($redis);
+        return new \Bernard\Driver\PhpRedis\Driver($redis);
     };
 }
