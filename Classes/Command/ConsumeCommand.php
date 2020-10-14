@@ -54,8 +54,6 @@ class ConsumeCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-        $options = $input->getOptions();
         $arguments = $input->getArguments();
         $workerPoolSize = $arguments['workerPoolSize'];
         $maxRuntime = $arguments['maxRuntime'];
@@ -67,13 +65,8 @@ class ConsumeCommand extends Command
 
         if ($workerPoolSize > 1) {
             //force disconnect before worker fork
-            if (class_exists(ConnectionPool::class)) {
-                $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
-                $connectionPool->getConnectionForTable('bernard_messages')->close();
-            } else {
-                $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
-                $connectionPool->getConnectionForTable('bernard_messages')->close();
-            }
+            $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+            $connectionPool->getConnectionForTable('bernard_messages')->close();
         }
 
         $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
@@ -119,6 +112,6 @@ class ConsumeCommand extends Command
         } else {
             $queueWorker(1);
         }
+        return Command::SUCCESS;
     }
-
 }

@@ -6,7 +6,7 @@ namespace DFAU\Ghost;
 
 use Bernard\QueueFactory;
 use Bernard\Router;
-use Bernard\Router\SimpleRouter;
+use Bernard\Router\ReceiverMapRouter;
 use DFAU\Ghost\Exception\IncompleteConnectionConfigurationException;
 use DFAU\Ghost\Exception\UndefinedConnectionException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -85,8 +85,9 @@ class CmsConfigurationFactory
     {
         $receiverConfiguration = self::getConnectionConfiguration($connectionName, 'receivers');
 
-        /** @var SimpleRouter $router */
-        $router = GeneralUtility::makeInstance(SimpleRouter::class, $receiverConfiguration);
+//        v10Change - i'm' not 100% sure this is the right router
+        /** @var ReceiverMapRouter $router */
+        $router = GeneralUtility::makeInstance(ReceiverMapRouter::class, $receiverConfiguration);
         return $router;
     }
 
