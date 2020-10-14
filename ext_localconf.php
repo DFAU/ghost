@@ -6,13 +6,9 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
         'className' => \Bernard\QueueFactory\PersistentFactory::class,
         'arguments' => [
             'driver' => function () {
-                if (class_exists(\TYPO3\CMS\Core\Database\ConnectionPool::class)) {
                     /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
                     $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
                     return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bernard\Driver\Doctrine\Driver::class, $connectionPool->getConnectionForTable('bernard_messages'));
-                } else {
-                    return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\DFAU\Ghost\Driver\Typo3DbDriver::class);
-                }
             },
             'serializer' => function () {
                 return new \Bernard\Serializer();

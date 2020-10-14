@@ -7,8 +7,8 @@
     "typo3-ter/ghost": "self.version"
   },
   "require": {
-    "php" : "^7.0",
-    "typo3/cms-core": "^7.6 || ^8.7 || ^9.5 || ^10.4",
+    "php" : "^7.2",
+    "typo3/cms-core": "^10.4",
     "helsner/bernard": "dev-master"
   },
   "suggest": {
