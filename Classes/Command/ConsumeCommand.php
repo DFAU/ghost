@@ -119,6 +119,6 @@ class ConsumeCommand extends Command
         } else {
             $queueWorker(1);
         }
+        return Command::SUCCESS;
     }
-
 }
