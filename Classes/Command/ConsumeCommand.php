@@ -5,17 +5,14 @@ namespace DFAU\Ghost\Command;
 use Bernard\Consumer;
 use Bernard\Queue\RoundRobinQueue;
 use DFAU\Ghost\CmsConfigurationFactory;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ConsumeCommand extends Command
 {
-
     /**
      * Configure the command by defining the name, options and arguments
      */
@@ -23,9 +20,9 @@ class ConsumeCommand extends Command
     {
         $this->setDescription('Consume list of Bernard Messages');
         $this->addArgument(
-        'queueNames',
+            'queueNames',
             InputArgument::REQUIRED,
-        'name of queue to progress'
+            'name of queue to progress'
         );
         $this->addArgument(
             'maxRuntime',
@@ -48,9 +45,7 @@ class ConsumeCommand extends Command
     }
 
     /**
-     *
      * @inheritdoc
-     *
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -77,7 +72,8 @@ class ConsumeCommand extends Command
             $consumer = GeneralUtility::makeInstance(
                 Consumer::class,
                 CmsConfigurationFactory::getRecieversForConnectionName($connectionName),
-                CmsConfigurationFactory::getEventDispatcherForDirectionAndConnectionName($queueFactory, CmsConfigurationFactory::MIDDLEWARE_DIRECTION_CONSUMER, $connectionName));
+                CmsConfigurationFactory::getEventDispatcherForDirectionAndConnectionName($queueFactory, CmsConfigurationFactory::MIDDLEWARE_DIRECTION_CONSUMER, $connectionName)
+            );
 
             $queue = null;
             if (count($queueNames) > 1) {
