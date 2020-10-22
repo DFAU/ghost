@@ -1,4 +1,5 @@
 <?php
+
 defined('TYPO3_MODE') or die();
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsConfigurationFactory::DEFAULT_CONNECTION_NAME] = [
@@ -6,14 +7,14 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
         'className' => \Bernard\QueueFactory\PersistentFactory::class,
         'arguments' => [
             'driver' => function () {
-                    /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
-                    $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
-                    return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bernard\Driver\Doctrine\Driver::class, $connectionPool->getConnectionForTable('bernard_messages'));
+                /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
+                $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+                return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bernard\Driver\Doctrine\Driver::class, $connectionPool->getConnectionForTable('bernard_messages'));
             },
             'serializer' => function () {
                 return new \Bernard\Serializer();
-            }
-        ]
+            },
+        ],
     ],
     'receivers' => [],
     'subscribers' => [
@@ -33,11 +34,11 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
                                 $connectionName
                             )
                         );
-                    }
+                    },
                 ],
             ],
         ],
-    ]
+    ],
 ];
 
 if (class_exists('redis')) {
