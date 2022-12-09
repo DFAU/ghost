@@ -11,6 +11,9 @@
     "typo3/cms-core": "^11.5",
     "helsner/bernard": "@dev"
   },
+  "require-dev": {
+    "ssch/typo3-rector": "^v1.0.5"
+  },
   "suggest": {
     "ext-redis": "Necessary for the redis driver",
     "qxsch/worker-pool": "For queue worker parallelization"
@@ -23,6 +26,18 @@
   "extra": {
     "typo3/cms": {
       "extension-key": "ghost"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:helsner/bernard.git"
+    }
+  ],
+  "config": {
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true
     }
   }
 }
