@@ -2,6 +2,9 @@
 
 namespace DFAU\Ghost\Command;
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use QXS\WorkerPool\WorkerPool;
+use QXS\WorkerPool\ClosureWorker;
 use Bernard\Consumer;
 use Bernard\Queue\RoundRobinQueue;
 use DFAU\Ghost\CmsConfigurationFactory;
@@ -60,7 +63,7 @@ class ConsumeCommand extends Command
 
         if ($workerPoolSize > 1) {
             //force disconnect before worker fork
-            $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
             $connectionPool->getConnectionForTable('bernard_messages')->close();
         }
 
@@ -90,15 +93,15 @@ class ConsumeCommand extends Command
             }
         };
 
-        if ($workerPoolSize > 1 && !class_exists(\QXS\WorkerPool\WorkerPool::class)) {
+        if ($workerPoolSize > 1 && !class_exists(WorkerPool::class)) {
             $this->output->outputLine('Warning: Worker Pool Size is bigger than 1 and qxsch/worker-pool is not installed. Falling back to single worker.');
         }
 
-        if ($workerPoolSize > 1 && class_exists(\QXS\WorkerPool\WorkerPool::class)) {
-            $wp = new \QXS\WorkerPool\WorkerPool();
+        if ($workerPoolSize > 1 && class_exists(WorkerPool::class)) {
+            $wp = new WorkerPool();
             $wp->setWorkerPoolSize($workerPoolSize)
                 ->disableSemaphore()
-                ->create(new \QXS\WorkerPool\ClosureWorker($queueWorker));
+                ->create(new ClosureWorker($queueWorker));
 
             for ($i = 0; $i < $workerPoolSize; $i++) {
                 $wp->run($i);

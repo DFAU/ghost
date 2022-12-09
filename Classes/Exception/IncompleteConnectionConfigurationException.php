@@ -2,6 +2,7 @@
 
 namespace DFAU\Ghost\Exception;
 
-class IncompleteConnectionConfigurationException extends \DFAU\Ghost\Exception
+use DFAU\Ghost\Exception;
+class IncompleteConnectionConfigurationException extends Exception
 {
 }
