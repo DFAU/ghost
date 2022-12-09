@@ -7,9 +7,9 @@
     "typo3-ter/ghost": "self.version"
   },
   "require": {
-    "php" : "^7.2",
-    "typo3/cms-core": "^10.4",
-    "helsner/bernard": "dev-master"
+    "php" : "^7.4",
+    "typo3/cms-core": "^11.5",
+    "helsner/bernard": "@dev"
   },
   "suggest": {
     "ext-redis": "Necessary for the redis driver",
