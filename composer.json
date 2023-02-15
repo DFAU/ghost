@@ -7,7 +7,7 @@
     "typo3-ter/ghost": "self.version"
   },
   "require": {
-    "php" : "^7.4",
+    "php" : "^7.4 | ^8",
     "typo3/cms-core": "^11.5",
     "helsner/bernard": "@dev"
   },
