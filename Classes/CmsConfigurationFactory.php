@@ -90,7 +90,7 @@ class CmsConfigurationFactory
     {
         $receiverConfiguration = self::getConnectionConfiguration($connectionName, 'receivers');
 
-//        v10Change - i'm' not 100% sure this is the right router
+        // TODO v10Change - I'm not 100% sure this is the right router
         /** @var ReceiverMapRouter $router */
         $router = GeneralUtility::makeInstance(ReceiverMapRouter::class, $receiverConfiguration);
         return $router;

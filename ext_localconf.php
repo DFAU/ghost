@@ -40,13 +40,3 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsCo
         ],
     ],
 ];
-
-if (class_exists('redis')) {
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections'][\DFAU\Ghost\CmsConfigurationFactory::DEFAULT_CONNECTION_NAME];
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ghost']['connections']['redis']['queueFactory']['arguments']['driver'] = function () {
-        $redis = new \Redis();
-        $redis->connect('127.0.0.1', 6379);
-        $redis->setOption(Redis::OPT_PREFIX, 'ghost:');
-        return new \Bernard\Driver\PhpRedis\Driver($redis);
-    };
-}
