@@ -2,6 +2,7 @@
 
 namespace DFAU\Ghost\Command;
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use Bernard\Consumer;
 use Bernard\Queue\RoundRobinQueue;
 use DFAU\Ghost\CmsConfigurationFactory;
@@ -60,11 +61,11 @@ class ConsumeCommand extends Command
 
         if ($workerPoolSize > 1) {
             //force disconnect before worker fork
-            $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
             $connectionPool->getConnectionForTable('bernard_messages')->close();
         }
 
-        $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime) {
+        $queueWorker = function ($i) use ($queueNames, $connectionName, $maxRuntime, $output) {
             $GLOBALS['worker-id'] = $i;
             $queueFactory = CmsConfigurationFactory::getQueueFactoryForConnectionName($connectionName);
 
@@ -86,28 +87,11 @@ class ConsumeCommand extends Command
             if ($queue) {
                 $consumer->consume($queue, [ 'max-runtime' => $maxRuntime ]);
             } else {
-                $this->output->outputLine('Error: could not create queue for worker:' . $i);
+                $output->writeln('Error: could not create queue for worker:' . $i);
             }
         };
 
-        if ($workerPoolSize > 1 && !class_exists(\QXS\WorkerPool\WorkerPool::class)) {
-            $this->output->outputLine('Warning: Worker Pool Size is bigger than 1 and qxsch/worker-pool is not installed. Falling back to single worker.');
-        }
-
-        if ($workerPoolSize > 1 && class_exists(\QXS\WorkerPool\WorkerPool::class)) {
-            $wp = new \QXS\WorkerPool\WorkerPool();
-            $wp->setWorkerPoolSize($workerPoolSize)
-                ->disableSemaphore()
-                ->create(new \QXS\WorkerPool\ClosureWorker($queueWorker));
-
-            for ($i = 0; $i < $workerPoolSize; $i++) {
-                $wp->run($i);
-            }
-
-            $wp->waitForAllWorkers();
-        } else {
-            $queueWorker(1);
-        }
+        $queueWorker(1);
         return Command::SUCCESS;
     }
 }

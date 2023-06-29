@@ -7,9 +7,13 @@
     "typo3-ter/ghost": "self.version"
   },
   "require": {
-    "php" : "^7.2",
-    "typo3/cms-core": "^10.4",
+    "php" : "^7.4 | ^8",
+    "typo3/cms-core": "^11.5",
     "helsner/bernard": "dev-master"
+  },
+  "require-dev": {
+    "ssch/typo3-rector": "^v1.1.3",
+    "dfau/coding-standard": "^2.0.0"
   },
   "suggest": {
     "ext-redis": "Necessary for the redis driver",
@@ -24,5 +28,17 @@
     "typo3/cms": {
       "extension-key": "ghost"
     }
-  }
+  },
+  "config": {
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "repositories": [
+    {"type": "composer", "url": "https://toujou-repo.kodzutsumi-senta.toujou.systems"},
+    {"type": "composer", "url": "https://repo.kodzutsumi-senta.toujou.systems"},
+    {"packagist": false}
+  ]
 }

@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DFAU\Ghost\Exception;
 
-class IncompleteConnectionConfigurationException extends \DFAU\Ghost\Exception
+use DFAU\Ghost\Exception;
+
+class IncompleteConnectionConfigurationException extends Exception
 {
 }
